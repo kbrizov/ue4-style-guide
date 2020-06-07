@@ -10,6 +10,10 @@ Heavily inspired by the [Airbnb Javascript Style Guide](https://github.com/airbn
 
 An automated method of checking your project against this style guide is available for purchase at [the Unreal Engine marketplace](https://www.unrealengine.com/marketplace/linter). This plugin's source code will eventually be free, but in order to use with UE4 without building the engine from source code, please use the marketplace version.
 
+## Linter and Style Guide Documentation
+
+More technical documentation regarding Linter and the Style Guide can be found at our [ReadTheDocs](https://ue4-style-guide.readthedocs.io/en/latest/) page.
+
 ## Discuss This Style Guide
 
 Gamemakin LLC has a public Discord channel at http://discord.gamemak.in with a #linter channel if you'd like to discuss all things style guide and Linter plugin.
@@ -105,12 +109,26 @@ If you are helping someone who's work conforms to a different but consistent and
 
 When joining an Unreal Engine 4 team one of your first questions should be "Do you have a style guide?". If the answer is no, you should be skeptical about their ability to work as a team.
 
+<a name="0.5"></a>
+### 0.5 Don't Break The Law
+
+Gamemakin LLC is not a lawyer, but please don't introduce illegal actions and behavior to a project, including but not limited to:
+
+* Don't distribute content you don't have the rights to distribute
+* Don't infringe on someone else's copyrighted or trademark material
+* Don't steal content
+* Follow licensing restrictions on content, e.g. attribute when attributions are needed
+
 <a name="toc"></a>
 ## Table of Contents
 
 > 1. [Asset Naming Conventions](#anc)
 > 1. [Directory Structure](#structure)
 > 1. [Blueprints](#bp)
+> 1. [Static Meshes](#s)
+> 1. [Particle Systems](#ps)
+> 1. [Levels / Maps](#levels)
+> 1. [Textures](#textures)
 
 <a name="anc"></a>
 <a name="1"></a>
@@ -124,13 +142,13 @@ Most things are prefixed with prefixes being generally an acronym of the asset t
 <a name="1.1"></a>
 ### 1.1 Base Asset Name - `Prefix_BaseAssetName_Variant_Suffix` ![#](https://img.shields.io/badge/lint-partial_support-yellow.svg)
 
-All assets should have a _Base Asset Name_. A Base Asset Name represents a logical grouping of related assets. Any asset that is part of this logical group should follow the the standard of  `Prefix_BaseAssetName_Variant_Suffix`.
+All assets should have a _Base Asset Name_. A Base Asset Name represents a logical grouping of related assets. Any asset that is part of this logical group should follow the standard of  `Prefix_BaseAssetName_Variant_Suffix`.
 
 Keeping the pattern `Prefix_BaseAssetName_Variant_Suffix` and in mind and using common sense is generally enough to warrant good asset names. Here are some detailed rules regarding each element.
 
 `Prefix` and `Suffix` are to be determined by the asset type through the following [Asset Name Modifier](#asset-name-modifiers) tables.
 
-`BaseAssetName` should be determined by short and easily recognizable name related to the context of this group of assets. For example, if you had a character named Bob, all of Bob's assets would have the `BaseAssetName` of `Bob`.
+`BaseAssetName` should be determined by a short and easily recognizable name related to the context of this group of assets. For example, if you had a character named Bob, all of Bob's assets would have the `BaseAssetName` of `Bob`.
 
 For unique and specific variations of assets, `Variant` is either a short and easily recognizable name that represents logical grouping of assets that are a subset of an asset's base name. For example, if Bob had multiple skins these skins should still use `Bob` as the `BaseAssetName` but include a recognizable `Variant`. An 'Evil' skin would be referred to as `Bob_Evil` and a 'Retro' skin would be referred to as `Bob_Retro`.
 
@@ -187,7 +205,7 @@ When naming an asset use these tables to determine the prefix and suffix to use 
 
 > 1.2.9 [Physics](#anc-physics)
 
-> 1.2.10 [Sound](#anc-sound)
+> 1.2.10 [Sound](#anc-sounds)
 
 > 1.2.11 [User Interface](#anc-ui)
 
@@ -207,11 +225,11 @@ When naming an asset use these tables to determine the prefix and suffix to use 
 | Level (Gameplay)        |            | _Gameplay  |                                  |
 | Blueprint               | BP_        |            |                                  |
 | Material                | M_         |            |                                  |
-| Static Mesh             | S_ or SM_  |            | Pick only one. Prefer S_.        |
+| Static Mesh             | S_         |            | Many use SM_. We use S_.         |
 | Skeletal Mesh           | SK_        |            |                                  |
 | Texture                 | T_         | _?         | See [Textures](#anc-textures)    |
 | Particle System         | PS_        |            |                                  |
-| Widget Blueprint        | WBP_ or WB_|            | Pick only one. Prefer WBP_.      |
+| Widget Blueprint        | WBP_       |            |                                  |
 
 <a name="anc-animations"></a>
 <a name="1.2.2"></a>
@@ -224,7 +242,7 @@ When naming an asset use these tables to determine the prefix and suffix to use 
 | Animation Blueprint     | ABP_       |            |                                  |
 | Animation Composite     | AC_        |            |                                  |
 | Animation Montage       | AM_        |            |                                  |
-| Animation Sequence      | A_ or AS_  |            | Pick only one. Prefer A_.        |
+| Animation Sequence      | A_         |            |                                  |
 | Blend Space             | BS_        |            |                                  |
 | Blend Space 1D          | BS_        |            |                                  |
 | Level Sequence          | LS_        |            |                                  |
@@ -246,6 +264,8 @@ When naming an asset use these tables to determine the prefix and suffix to use 
 | Decorator               | BTDecorator_ |          |                                  |
 | Service                 | BTService_ |            |                                  |
 | Task                    | BTTask_    |            |                                  |
+| Environment Query       | EQS_       |            |                                  |
+| EnvQueryContext         | EQS_       | Context    |                                  |
 
 <a name="anc-bp"></a>
 <a name="1.2.4"></a>
@@ -254,26 +274,29 @@ When naming an asset use these tables to determine the prefix and suffix to use 
 | Asset Type              | Prefix     | Suffix     | Notes                            |
 | ----------------------- | ---------- | ---------- | -------------------------------- |
 | Blueprint               | BP_        |            |                                  |
+| Blueprint Component	  | BP_	       | Component  | I.e. BP_InventoryComponent       |
 | Blueprint Function Library | BPFL_   |            |                                  |
 | Blueprint Interface     | BPI_       |            |                                  |
 | Blueprint Macro Library | BPML_      |            | Do not use macro libraries if possible. |
 | Enumeration             | E          |            | No underscore.                   |
 | Structure               | F or S     |            | No underscore.                   |
-| Widget Blueprint        | WBP_ or WB_|            | Pick only one. Prefer WBP_.      |
+| Tutorial Blueprint      | TBP_       |            |                                  |
+| Widget Blueprint        | WBP_       |            |                                  |
 
 <a name="anc-materials"></a>
 <a name="1.2.5"></a>
 ### 1.2.5 Materials ![#](https://img.shields.io/badge/lint-supported-green.svg)
 
-| Asset Type              | Prefix     | Suffix     | Notes                            |
-| ----------------------- | ---------- | ---------- | -------------------------------- |
-| Material                | M_         |            |                                  |
-| Material (Post Process) | PP_        |            |                                  |
-| Material Function       | MF_        |            |                                  |
-| Material Instance       | MI_        |            |                                  |
-| Material Parameter Collection | MPC_ |            |                                  |
-| Subsurface Profile      | SP_ or SSP_|            | Pick only one. Prefer SP_.       |
-| Physical Materials      | PM_        |            |                                  |
+| Asset Type                    | Prefix     | Suffix     | Notes                            |
+| ----------------------------- | ---------- | ---------- | -------------------------------- |
+| Material                      | M_         |            |                                  |
+| Material (Post Process)       | PP_        |            |                                  |
+| Material Function             | MF_        |            |                                  |
+| Material Instance             | MI_        |            |                                  |
+| Material Parameter Collection | MPC_       |            |                                  |
+| Subsurface Profile            | SP_        |            |                                  |
+| Physical Materials            | PM_        |            |                                  |
+| Decal                         | M_, MI_    | _Decal     |                                  |
 
 <a name="anc-textures"></a>
 <a name="1.2.6"></a>
@@ -286,15 +309,16 @@ When naming an asset use these tables to determine the prefix and suffix to use 
 | Texture (Normal)        | T_         | _N         |                                  |
 | Texture (Roughness)     | T_         | _R         |                                  |
 | Texture (Alpha/Opacity) | T_         | _A         |                                  |
-| Texture (Ambient Occlusion) | T_     | _O or _AO  | Pick only one. Prefer _O.        |
+| Texture (Ambient Occlusion) | T_     | _O         |                                  |
 | Texture (Bump)          | T_         | _B         |                                  |
 | Texture (Emissive)      | T_         | _E         |                                  |
 | Texture (Mask)          | T_         | _M         |                                  |
 | Texture (Specular)      | T_         | _S         |                                  |
+| Texture (Metallic)      | T_         | _M         |                                  |
 | Texture (Packed)        | T_         | _*         | See notes below about [packing](#anc-textures-packing). |
 | Texture Cube            | TC_        |            |                                  |
 | Media Texture           | MT_        |            |                                  |
-| Render Target           | RT_ or RTT_|            | Pick only one. Prefer RT_.       |
+| Render Target           | RT_        |            |                                  |
 | Cube Render Target      | RTC_       |            |                                  |
 | Texture Light Profile   | TLP        |            |                                  |
 
@@ -311,27 +335,29 @@ Packing 4 channels of data into a texture (RGBA) is not recommended except for a
 <a name="1.2.7"></a>
 ### 1.2.7 Miscellaneous ![#](https://img.shields.io/badge/lint-supported-green.svg)
 
-| Asset Type              | Prefix     | Suffix     | Notes                            |
-| ----------------------- | ---------- | ---------- | -------------------------------- |
-| Animated Vector Field   | VFA_       |            |                                  |
-| Camera Anim             | CA_        |            |                                  |
-| Color Curve             | Curve_     | _Color     |                                  |
-| Curve Table             | Curve_     | _Table     |                                  |
-| Data Asset              | *_         |            | Prefix should be based on class. |
-| Data Table              | DT_        |            |                                  |
-| Float Curve             | Curve_     | _Float     |                                  |
-| Foliage Type            | FT_        |            |                                  |
-| Force Feedback Effect   | FFE_       |            |                                  |
-| Landscape Grass Type    | LG_        |            |                                  |
-| Landscape Layer         | LL_        |            |                                  |
-| Matinee Data            | Matinee_   |            |                                  |
-| Media Player            | MP_        |            |                                  |
-| Object Library          | OL_        |            |                                  |
-| Redirector              |            |            | These should be fixed up ASAP.   |
-| Sprite Sheet            | SS_        |            |                                  |
-| Static Vector Field     | VF_        |            |                                  |
-| Touch Interface Setup   | TI_        |            |                                  |
-| Vector Curve            | Curve_     | _Vector    |                                  |
+| Asset Type                 | Prefix     | Suffix     | Notes                            |
+| -------------------------- | ---------- | ---------- | -------------------------------- |
+| Animated Vector Field      | VFA_       |            |                                  |
+| Camera Anim                | CA_        |            |                                  |
+| Color Curve                | Curve_     | _Color     |                                  |
+| Curve Table                | Curve_     | _Table     |                                  |
+| Data Asset                 | *_         |            | Prefix should be based on class. |
+| Data Table                 | DT_        |            |                                  |
+| Float Curve                | Curve_     | _Float     |                                  |
+| Foliage Type               | FT_        |            |                                  |
+| Force Feedback Effect      | FFE_       |            |                                  |
+| Landscape Grass Type       | LG_        |            |                                  |
+| Landscape Layer            | LL_        |            |                                  |
+| Matinee Data               | Matinee_   |            |                                  |
+| Media Player               | MP_        |            |                                  |
+| Object Library             | OL_        |            |                                  |
+| Redirector                 |            |            | These should be fixed up ASAP.   |
+| Sprite Sheet               | SS_        |            |                                  |
+| Static Vector Field        | VF_        |            |                                  |
+| Substance Graph Instance   | SGI_       |            |                                  |
+| Substance Instance Factory | SIF_       |            |                                  |
+| Touch Interface Setup      | TI_        |            |                                  |
+| Vector Curve               | Curve_     | _Vector    |                                  |
 
 <a name="anc-paper2d"></a>
 <a name="1.2.8"></a>
@@ -381,7 +407,7 @@ Packing 4 channels of data into a texture (RGBA) is not recommended except for a
 | Font                    | Font_      |            |                                  |
 | Slate Brush             | Brush_     |            |                                  |
 | Slate Widget Style      | Style_     |            |                                  |
-| Widget Blueprint        | WBP_ or WB_|            | Pick only one. Prefer WBP_.      |
+| Widget Blueprint        | WBP_       |            |                                  |
 
 <a name="anc-effects"></a>
 <a name="1.2.12"></a>
@@ -391,6 +417,9 @@ Packing 4 channels of data into a texture (RGBA) is not recommended except for a
 | ----------------------- | ---------- | ---------- | -------------------------------- |
 | Particle System         | PS_        |            |                                  |
 | Material (Post Process) | PP_        |            |                                  |
+
+**[⬆ Back to Top](#table-of-contents)**
+
 
 <a name="2"></a>
 <a name="structure"></a>
@@ -493,7 +522,7 @@ See [Cases](#terms-cases).
 <a name="2.1.2"></a>
 #### 2.1.2 Never Use Spaces ![#](https://img.shields.io/badge/lint-supported-green.svg)
 
-Re-enforcing [2.1.1](#2.1.1), never use spaces. Spaces can cause various engineering tools and batch processes to fail. Ideally your project's root also contains no spaces and is located somewhere such as `D:\Project` instead of `C:\Users\My Name\My Documents\Unreal Projects`.
+Re-enforcing [2.1.1](#2.1.1), never use spaces. Spaces can cause various engineering tools and batch processes to fail. Ideally, your project's root also contains no spaces and is located somewhere such as `D:\Project` instead of `C:\Users\My Name\My Documents\Unreal Projects`.
 
 <a name="2.1.3"></a>
 #### 2.1.3 Never Use Unicode Characters And Other Symbols ![#](https://img.shields.io/badge/lint-supported-green.svg)
@@ -548,7 +577,7 @@ It is at this point where if the master materials for both projects are incompat
 <a name="2.2.3"></a>
 #### 2.2.3 Samples, Templates, and Marketplace Content Are Risk-Free
 
-An extension to [2.2.2](#2.2.2), if a team member decides to add sample content, template files, or assets they bought from the marketplace, it is guaranteed that these new assets will not interfere with the project in any way unless your project's top level folder is not uniquely named.
+An extension to [2.2.2](#2.2.2), if a team member decides to add sample content, template files, or assets they bought from the marketplace, it is guaranteed, as long your project's top-level folder is uniquely named, these new assets will not interfere with your project.
 
 You can not trust marketplace content to fully conform to the [top level folder rule](#2.2). There exist many assets that have the majority of their content in a top level folder but also have possibly modified Epic sample content as well as level files polluting the global `Content` folder.
 
@@ -578,7 +607,7 @@ Map files are incredibly special and it is common for every project to have its 
 
 Being able to tell someone to open a specific map without having to explain where it is is a great time saver and general 'quality of life' improvement. It is common for levels to be within sub-folders of `Maps`, such as `Maps/Campaign1/` or `Maps/Arenas`, but the most important thing here is that they all exist within `/Content/Project/Maps`.
 
-This also simplifies the job of cooking for engineers. Wrangling levels for a build process can be extremely frustrating if they have to dig through arbitrary folders for them. If a team's maps are all in one place, it is much harder to accidentally not cook a map in a build. It also simplifies lighting build scripts as well QA processes.
+This also simplifies the job of cooking for engineers. Wrangling levels for a build process can be extremely frustrating if they have to dig through arbitrary folders for them. If a team's maps are all in one place, it is much harder to accidentally not cook a map in a build. It also simplifies lighting build scripts as well as QA processes.
 
 <a name="2.5"></a>
 <a name="structure-core"></a>
@@ -588,7 +617,7 @@ Use `/Content/Project/Core` folder for assets that are absolutely fundamental to
 
 This creates a very clear "don't touch these" message for other team members. Non-engineers should have very little reason to enter the `Core` folder. Following good code structure style, designers should be making their gameplay tweaks in child classes that expose functionality. World builders should be using prefab Blueprints in designated folders instead of potentially abusing base classes.
 
-For example if your project requires pickups that can be placed in a level, there should exist a base Pickup class in `Core/Pickups` that defines base behavior for a pickup. Specific pickups such as a Health or Ammo should exist in a folder such as `/Content/Project/Placeables/Pickups/`. Game designers can define and tweak pickups in this folder however they please, but they should not touch `Core/Pickups` as they may unintentionally break pickups project-wide.
+For example, if your project requires pickups that can be placed in a level, there should exist a base Pickup class in `Core/Pickups` that defines base behavior for a pickup. Specific pickups such as a Health or Ammo should exist in a folder such as `/Content/Project/Placeables/Pickups/`. Game designers can define and tweak pickups in this folder however they please, but they should not touch `Core/Pickups` as they may unintentionally break pickups project-wide.
 
 <a name="2.6"></a>
 <a name="structure-assettypes"></a>
@@ -604,7 +633,7 @@ All assets are assets.
 
 All asset names are named with their asset type in mind. These folders offer only redundant information and the use of these folders can easily be replaced with the robust and easy to use filtering system the Content Browser provides.
 
-Want to view only static mesh in `Environment/Rocks/`? Simply turn on the Static Mesh filter. If all assets are named correctly, they will also be sorted in alphabetical order regardless of prefixes. Want to view both static meshes and skeletal meshes? Simply turn on both filters. this eliminates the need to potentially have to `Control-Click` select two folders in the Content Browser's tree view.
+Want to view only static mesh in `Environment/Rocks/`? Simply turn on the Static Mesh filter. If all assets are named correctly, they will also be sorted in alphabetical order regardless of prefixes. Want to view both static meshes and skeletal meshes? Simply turn on both filters. This eliminates the need to potentially have to `Control-Click` select two folders in the Content Browser's tree view.
 
 > This also extends the full path name of an asset for very little benefit. The `S_` prefix for a static mesh is only two characters, whereas `Meshes/` is seven characters.
 
@@ -635,6 +664,25 @@ This way all 'global' materials have a place to live and are easily located.
 The `MaterialLibrary` doesn't have to consist of purely materials. Shared utility textures, material functions, and other things of this nature should be stored here as well within folders that designate their intended purpose. For example, generic noise textures should be located in `MaterialLibrary/Utility`.
 
 Any testing or debug materials should be within `MaterialLibrary/Debug`. This allows debug materials to be easily stripped from a project before shipping and makes it incredibly apparent if production assets are using them if reference errors are shown.
+
+<a name="2.9"></a>
+<a name="structure-no-empty-folders"></a>
+### 2.9 No Empty Folders ![#](https://img.shields.io/badge/lint-unsupported-red.svg)
+
+There simply shouldn't be any empty folders. They clutter the content browser.
+
+If you find that the content browser has an empty folder you can't delete, you should perform the following:
+1. Be sure you're using source control.
+1. Immediately run Fix Up Redirectors on your project.
+1. Navigate to the folder on-disk and delete the assets inside.
+1. Close the editor.
+1. Make sure your source control state is in sync (i.e. if using Perforce, run a Reconcile Offline Work on your content directory)
+1. Open the editor. Confirm everything still works as expected. If it doesn't, revert, figure out what went wrong, and try again.
+1. Ensure the folder is now gone.
+1. Submit changes to source control.
+
+**[⬆ Back to Top](#table-of-contents)**
+
 
 <a name="3"></a>
 <a name="bp"></a>
@@ -668,7 +716,7 @@ Broken blueprints can cause problems that manifest in other ways, such as broken
 <a name="bp-vars"></a>
 ### 3.2 Variables ![#](https://img.shields.io/badge/lint-partial_support-yellow.svg)
 
-The words `variable` and `property` may be used interchangably.
+The words `variable` and `property` may be used interchangeably.
 
 #### Sections
 
@@ -684,9 +732,7 @@ The words `variable` and `property` may be used interchangably.
 
 > 3.2.6 [Transient](#bp-vars-transient)
 
-> 3.2.7 [SaveGame](#bp-vars-savegame)
-
-> 3.2.8 [Config](#bp-vars-config)
+> 3.2.7 [Config](#bp-vars-config)
 
 <a name="3.2.1"></a>
 <a name="bp-var-naming"></a>
@@ -837,7 +883,7 @@ Do not arbitrarily mark variables as `Editable`.
 
 <a name="3.2.2.1"></a>
 <a name="bp-vars-editable-tooltips"></a>
-##### 3.2.2.1 Tooltips ![#](https://img.shields.io/badge/lint-unsupported-red.svg)
+##### 3.2.2.1 Tooltips ![#](https://img.shields.io/badge/lint-supported-green.svg)
 
 All `Editable` variables, including those marked editable just so they can be marked as `Expose On Spawn`, should have a description in their `Tooltip` fields that explains how changing this value affects the behavior of the blueprint.
 
@@ -910,14 +956,6 @@ Transient variables are variables that do not need to have their value saved and
 Because of this, all transient variables should always be initialized as zero or null. To do otherwise would result in hard to debug errors.
 
 <a name="3.2.7"></a>
-<a name="bp-vars-savegame"></a>
-#### 3.2.7 SaveGame Variables ![#](https://img.shields.io/badge/lint-supported-green.svg)
-
-Only use the SaveGame property of variables when inside a class derived from `SaveGame`. Use this property only if the `SaveGame` class should save this value.
-
-Do **not** mix `SaveGame` and `Transient`, this does not make any sense.
-
-<a name="3.2.8"></a>
 <a name="bp-vars-config"></a>
 #### 3.2.8 Config Variables ![#](https://img.shields.io/badge/lint-supported-green.svg)
 
@@ -931,7 +969,7 @@ This section describes how you should author functions, events, and event dispat
 
 <a name="3.3.1"></a>
 <a name="bp-funcs-naming"></a>
-#### 3.3.1 Function Naming
+#### 3.3.1 Function Naming ![#](https://img.shields.io/badge/lint-unsupported-red.svg)
 
 The naming of functions, events, and event dispatchers is critically important. Based on the name alone, certain assumptions can be made about functions. For example:
 
@@ -945,7 +983,7 @@ These questions and more can all be answered when functions are named appropriat
 
 <a name="3.3.1.1"></a>
 <a name="bp-funcs-naming-verbs"></a>
-#### 3.3.1.1 All Functions Should Be Verbs
+#### 3.3.1.1 All Functions Should Be Verbs ![#](https://img.shields.io/badge/lint-unsupported-red.svg)
 
 All functions and events perform some form of action, whether its getting info, calculating data, or causing something to explode. Therefore, all functions should all start with verbs. They should be worded in the present tense whenever possible. They should also have some context as to what they are doing.
 
@@ -974,13 +1012,13 @@ Bad examples:
 
 <a name="3.3.1.2"></a>
 <a name="bp-funcs-naming-onrep"></a>
-#### 3.3.1.2 Property RepNotify Functions Always `OnRep_Variable`
+#### 3.3.1.2 Property RepNotify Functions Always `OnRep_Variable` ![#](https://img.shields.io/badge/lint-unsupported-red.svg)
 
 All functions for replicated with notification variables should have the form `OnRep_Variable`. This is forced by the Blueprint editor. If you are writing a C++ `OnRep` function however, it should also follow this convention when exposing it to Blueprints.
 
 <a name="3.3.1.3"></a>
 <a name="bp-funcs-naming-bool"></a>
-#### 3.3.1.3 Info Functions Returning Bool Should Ask Questions
+#### 3.3.1.3 Info Functions Returning Bool Should Ask Questions ![#](https://img.shields.io/badge/lint-unsupported-red.svg)
 
 When writing a function that does not change the state of or modify any object and is purely for getting information, state, or computing a yes/no value, it should ask a question. This should also follow [the verb rule](#bp-funcs-naming-verbs).
 
@@ -1007,9 +1045,9 @@ Bad examples:
 
 <a name="3.3.1.4"></a>
 <a name="bp-funcs-naming-eventhandlers"></a>
-#### 3.3.1.4 Event Handlers and Dispatchers Should Start With `On`
+#### 3.3.1.4 Event Handlers and Dispatchers Should Start With `On` ![#](https://img.shields.io/badge/lint-unsupported-red.svg)
 
-Any function that handles an event or dispatches an event should with `On` and continue to follow [the verb rule](#bp-funcs-naming-verbs). The verb may move to the end however if past-tense reads better.
+Any function that handles an event or dispatches an event should start with `On` and continue to follow [the verb rule](#bp-funcs-naming-verbs). The verb may move to the end however if past-tense reads better.
 
 [Collocations](http://dictionary.cambridge.org/us/grammar/british-grammar/about-words-clauses-and-sentences/collocation) of the word `On` are exempt from following the verb rule.
 
@@ -1034,7 +1072,7 @@ Bad examples:
 
 <a name="3.3.1.5"></a>
 <a name="bp-funcs-naming-rpcs"></a>
-#### 3.3.1.5 Remote Procedure Calls Should Be Prefixed With Target
+#### 3.3.1.5 Remote Procedure Calls Should Be Prefixed With Target ![#](https://img.shields.io/badge/lint-unsupported-red.svg)
 
 Any time an RPC is created, it should be prefixed with either `Server`, `Client`, or `Multicast`. No exceptions.
 
@@ -1056,7 +1094,7 @@ Bad examples:
 
 <a name="3.3.2"></a>
 <a name="bp-funcs-return"></a>
-#### 3.3.2 All Functions Must Have Return Nodes
+#### 3.3.2 All Functions Must Have Return Nodes ![#](https://img.shields.io/badge/lint-supported-green.svg)
 
 All functions must have return nodes, no exceptions.
 
@@ -1068,7 +1106,7 @@ In situations like where a programmer may add a pin to a Sequence node or add lo
 
 <a name="3.3.3"></a>
 <a name="bp-graphs-funcs-node-limit"></a>
-#### 3.3.3 No Function Should Have More Than 50 Nodes 
+#### 3.3.3 No Function Should Have More Than 50 Nodes ![#](https://img.shields.io/badge/lint-supported-green.svg)
 
 Simply, no function should have more than 50 nodes. Any function this big should be broken down into smaller functions for readability and ease of maintenance.
 
@@ -1082,23 +1120,39 @@ The following nodes are not counted as they are deemed to not increase function 
 * Function Entry
 * Self
 
+<a name="3.3.4"></a>
+<a name="bp-graphs-funcs-description"></a>
+#### 3.3.4 All Public Functions Should Have A Description ![#](https://img.shields.io/badge/lint-supported-green.svg)
+
+This rule applies more to public facing or marketplace blueprints, so that others can more easily navigate and consume your blueprint API.
+
+Simply, any function that has an access specificer of Public should have its description filled out. 
+
+<a name="3.3.5"></a>
+<a name="bp-graphs-funcs-plugin-category"></a>
+#### 3.3.5 All Custom Static Plugin `BlueprintCallable` Functions Must Be Categorized By Plugin Name ![#](https://img.shields.io/badge/lint-unsupported-red.svg)
+
+If your project includes a plugin that defines `static` `BlueprintCallable` functions, they should have their category set to the plugin's name or a subset category of the plugin's name.
+
+For example, `Zed Camera Interface` or `Zed Camera Interface | Image Capturing`.
+
 <a name="3.4"></a>
 <a name="bp-graphs"></a>
-### 3.4 Blueprint Graphs 
+### 3.4 Blueprint Graphs ![#](https://img.shields.io/badge/lint-unsupported-red.svg)
 
 This section covers things that apply to all Blueprint graphs.
 
 <a name="3.4.1"></a>
 <a name="bp-graphs-spaghetti"></a>
-#### 3.4.1 No Spaghetti
+#### 3.4.1 No Spaghetti ![#](https://img.shields.io/badge/lint-unsupported-red.svg)
 
 Wires should have clear beginnings and ends. You should never have to mentally untangle wires to make sense of a graph. Many of the following sections are dedicated to reducing spaghetti.
 
 <a name="3.4.2"></a>
 <a name="bp-graphs-align-wires"></a>
-#### 3.4.2 Align Wires Not Nodes
+#### 3.4.2 Align Wires Not Nodes ![#](https://img.shields.io/badge/lint-unsupported-red.svg)
 
-Always align wires, not nodes. You can't always control the size and pin location on a node, but you can always control the location of a node and thus control the wires. Straight wires provide clear linear flow. Wiggly wires wear wits wickedly. You can straighten wires by using the Straigten Connections command with BP nodes selected. Hotkey: Q
+Always align wires, not nodes. You can't always control the size and pin location on a node, but you can always control the location of a node and thus control the wires. Straight wires provide clear linear flow. Wiggly wires wear wits wickedly. You can straighten wires by using the Straighten Connections command with BP nodes selected. Hotkey: Q
 
 Good example: The tops of the nodes are staggered to keep a perfectly straight white exec line.
 ![Aligned By Wires](https://github.com/allar/ue4-style-guide/raw/master/images/bp-graphs-align-wires-good.png "Aligned By Wires")
@@ -1111,9 +1165,235 @@ Acceptable Example: Certain nodes might not cooperate no matter how you use the 
 
 <a name="3.4.3"></a>
 <a name="bp-graphs-exec-first-class"></a>
-#### 3.4.3 White Exec Lines Are Top Priority
+#### 3.4.3 White Exec Lines Are Top Priority ![#](https://img.shields.io/badge/lint-unsupported-red.svg)
 
-If you ever have to decide between straightening a linear white exec line or straightening  data lines of some kind, always straighten the white exec line.
+If you ever have to decide between straightening a linear white exec line or straightening data lines of some kind, always straighten the white exec line.
+
+<a name="3.4.4"></a>
+<a name="bp-graphs-block-comments"></a>
+#### 3.4.4 Graphs Should Be Reasonably Commented ![#](https://img.shields.io/badge/lint-unsupported-red.svg)
+
+Blocks of nodes should be wrapped in comments that describe their higher-level behavior. While every function should be well named so that each individual node is easily readable and understandable, groups of nodes contributing to a purpose should have their purpose described in a comment block. If a function does not have many blocks of nodes and its clear that the nodes are serving a direct purpose in the function's goal, then they do not need to be commented as the function name and  description should suffice.
+
+<a name="3.4.5"></a>
+<a name="bp-graphs-cast-error-handling"></a>
+#### 3.4.5 Graphs Should Handle Casting Errors Where Appropriate ![#](https://img.shields.io/badge/lint-unsupported-red.svg)
+
+If a function or event assumes that a cast always succeeds, it should appropriately report a failure in logic if the cast fails. This lets others know why something that is 'supposed to work' doesn't. A function should also attempt a graceful recover after a failed cast if it's known that the reference being casted could ever fail to be casted.
+
+This does not mean every cast node should have its failure handled. In many cases, especially events regarding things like collisions, it is expected that execution flow terminates on a failed cast quietly.
+
+<a name="3.4.6"></a>
+<a name="bp-graphs-dangling-nodes"></a>
+#### 3.4.6 Graphs Should Not Have Any Dangling / Loose / Dead Nodes ![#](https://img.shields.io/badge/lint-unsupported-red.svg)
+
+All nodes in all blueprint graphs must have a purpose. You should not leave dangling blueprint nodes around that have no purpose or are not executed.
+
+**[⬆ Back to Top](#table-of-contents)**
+
+
+<a name="4"></a>
+<a name="Static Meshes"></a>
+<a name="s"></a>
+## 4. Static Meshes ![#](https://img.shields.io/badge/lint-partial_support-yellow.svg)
+
+This section will focus on Static Mesh assets and their internals.
+
+### Sections
+
+> 4.1 [UVs](#s-uvs)
+
+> 4.2 [LODs](#s-lods)
+
+> 4.3 [Modular Socketless Snapping](#s-modular-snapping)
+
+> 4.4 [Must Have Collision](#s-collision)
+
+> 4.5 [Correct Scale](#s-scaled)
+
+<a name="4.1"></a>
+<a name="s-uvs"></a>
+### 4.1 Static Mesh UVs ![#](https://img.shields.io/badge/lint-supported-green.svg)
+
+If Linter is reporting bad UVs and you can't seem to track it down, open the resulting `.log` file in your project's `Saved/Logs` folder for exact details as to why it's failing. I am hoping to include these messages in the Lint report in the future.
+
+<a name="4.1.1"></a>
+<a name="s-uvs-no-missing"></a>
+#### 4.1.1 All Meshes Must Have UVs ![#](https://img.shields.io/badge/lint-supported-green.svg)
+
+Pretty simple. All meshes, regardless how they are to be used, should not be missing UVs.
+
+<a name="4.1.2"></a>
+<a name="s-uvs-no-overlapping"></a>
+#### 4.1.2 All Meshes Must Not Have Overlapping UVs for Lightmaps ![#](https://img.shields.io/badge/lint-supported-green.svg)
+
+Pretty simple. All meshes, regardless how they are to be used, should have valid non-overlapping UVs.
+
+<a name="4.2"></a>
+<a name="s-lods"></a>
+### 4.2 LODs Should Be Set Up Correctly ![#](https://img.shields.io/badge/lint-unsupported-red.svg)
+
+This is a subjective check on a per-project basis, but as a general rule any mesh that can be seen at varying distances should have proper LODs.
+
+<a name="4.3"></a>
+<a name="s-modular-snapping"></a>
+### 4.3 Modular Socketless Assets Should Snap To The Grid Cleanly ![#](https://img.shields.io/badge/lint-unsupported-red.svg)
+
+This is a subjective check on a per-asset basis, however any modular socketless assets should snap together cleanly based on the project's grid settings.
+
+It is up to the project whether to snap based on a power of 2 grid or on a base 10 grid. However if you are authoring modular socketless assets for the marketplace, Epic's requirement is that they snap cleanly when the grid is set to 10 units or bigger.
+
+<a name="4.4"></a>
+<a name="s-collision"></a>
+### 4.4 All Meshes Must Have Collision ![#](https://img.shields.io/badge/lint-unsupported-red.svg)
+
+Regardless of whether an asset is going to be used for collision in a level, all meshes should have proper collision defined. This helps the engine with things such as bounds calculations, occlusion, and lighting. Collision should also be well-formed to the asset.
+
+<a name="4.5"></a>
+<a name="s-scaled"></a>
+### 4.5 All Meshes Should Be Scaled Correctly ![#](https://img.shields.io/badge/lint-unsupported-red.svg)
+
+This is a subjective check on a per-project basis, however all assets should be scaled correctly to their project. Level designers or blueprint authors should not have to tweak the scale of meshes to get them to confirm in the editor. Scaling meshes in the engine should be treated as a scale override, not a scale correction.
+
+**[⬆ Back to Top](#table-of-contents)**
+
+
+<a name="5"></a>
+<a name="Particle Systems"></a>
+<a name="ps"></a>
+## 5. Particle Systems ![#](https://img.shields.io/badge/lint-supported-green.svg)
+
+This section will focus on Particle System assets and their internals.
+
+### Sections
+
+> 5.1 [Emitter Naming](#ps-naming)
+
+<a name="5.1"></a>
+<a name="ps-emitter-naming"></a>
+### 5.1 Emitter Naming ![#](https://img.shields.io/badge/lint-supported-green.svg)
+
+All emitters in a Particle System should be named something descriptive and not left to their default name "Particle Emitter".
+
+**[⬆ Back to Top](#table-of-contents)**
+
+
+<a name="6"></a>
+<a name="Levels"></a>
+<a name="levels"></a>
+## 6. Levels / Maps ![#](https://img.shields.io/badge/lint-partial_support-yellow.svg)
+
+[See Terminology Note](#terms-level-map) regarding "levels" vs "maps".
+
+This section will focus on Level assets and their internals.
+
+### Sections
+
+> 6.1 [No Errors Or Warnings](#levels-no-errors-or-warnings)
+
+> 6.2 [Lighting Should Be Built](#levels-lighting-should-be-built)
+
+> 6.3 [No Player Visible Z Fighting](#evels-no-visible-z-fighting)
+
+> 6.4 [Marketplace Specific Rules](#evels-levels-mp-rules)
+
+<a name="6.1"></a>
+<a name="levels-no-errors-or-warnings"></a>
+### 6.1 No Errors Or Warnings ![#](https://img.shields.io/badge/lint-partial_support-yellow.svg)
+
+All levels should load with zero errors or warnings. If a level loads with any errors or warnings, they should be fixed immediately to prevent cascading issues.
+
+You can run a map check on an open level in the editor by using the console command "map check".
+
+Please note: Linter is even more strict on this than the editor is currently, and will catch load errors that the editor will resolve on its own.
+
+<a name="6.2"></a>
+<a name="levels-lighting-should-be-built"></a>
+### 6.2 Lighting Should Be Built ![#](https://img.shields.io/badge/lint-unsupported-red.svg)
+
+It is normal during development for levels to occasionally not have lighting built. When doing a test/internal/shipping build or any build that is to be distributed however, lighting should always be built.
+
+<a name="6.3"></a>
+<a name="levels-no-visible-z-fighting"></a>
+### 6.3 No Player Visible Z Fighting ![#](https://img.shields.io/badge/lint-unsupported-red.svg)
+
+Levels should not have any [z-fighting](https://en.wikipedia.org/wiki/Z-fighting) in all areas visible to the player. 
+
+<a name="6.4"></a>
+<a name="levels-mp-rules"></a>
+### 6.4 Marketplace Specific Rules ![#](https://img.shields.io/badge/lint-unsupported-red.svg)
+
+If a project is to be sold on the UE4 Marketplace, it must follow these rules.
+
+<a name="6.4.1"></a>
+<a name="levels-mp-rules-overview"></a>
+### 6.4.1 Overview Level ![#](https://img.shields.io/badge/lint-unsupported-red.svg)
+
+If your project contains assets that should be visualized or demoed, you must have a map within your project that contains the name "Overview".
+
+This overview map, if it is visualizing assets, should be set up according to [Epic's guidelines](http://help.epicgames.com/customer/en/portal/articles/2592186-marketplace-submission-guidelines-preparing-your-assets#Required%20Levels%20and%20Maps).
+
+For example, `InteractionComponent_Overview`.
+
+<a name="6.4.2"></a>
+<a name="levels-mp-rules-demo"></a>
+### 6.4.2 Demo Level ![#](https://img.shields.io/badge/lint-unsupported-red.svg)
+
+If your project contains assets that should be demoed or come with some sort of tutorial, you must have a map within your project that contains the name "Demo". This level should also contain documentation within it in some form that illustrates how to use your project. See Epic's Content Examples project for good examples on how to do this.
+
+If your project is a gameplay mechanic or other form of system as opposed to an art pack, this can be the same as your "Overview" map.
+
+For example, `InteractionComponent_Overview_Demo`, `ExplosionKit_Demo`.
+
+**[⬆ Back to Top](#table-of-contents)**
+
+
+<a name="7"></a>
+<a name="textures"></a>
+## 7. Textures ![#](https://img.shields.io/badge/lint-unsupported-red.svg)
+
+This section will focus on Texture assets and their internals.
+
+### Sections
+
+> 7.1 [Dimensions Are Powers of 2](#textures-dimension)
+
+> 7.2 [Texture Density Should Be Uniform](#textures-dimension)
+
+> 7.3 [Textures Should Be No Bigger than 8192](#textures-max-size)
+
+> 7.4 [Correct Texture Groups](#textures-textures-group)
+
+<a name="7.1"></a>
+<a name="textures-dimensions"></a>
+### 7.1 Dimensions Are Powers of 2 ![#](https://img.shields.io/badge/lint-unsupported-red.svg)
+
+All textures, except for UI textures, must have its dimensions in multiples of powers of 2. Textures do not have to be square.
+
+For example, `128x512`, `1024x1024`, `2048x1024`, `1024x2048`, `1x512`.
+
+<a name="7.2"></a>
+<a name="textures-density"></a>
+### 7.2 Texture Density Should Be Uniform ![#](https://img.shields.io/badge/lint-unsupported-red.svg)
+
+All textures should be of a size appropriate for their standard use case. Appropriate texture density varies from project to project, but all textures within that project should have a consistent density.
+
+For example, if a project's texture density is 8 pixel per 1 unit, a texture that is meant to be applied to a 100x100 unit cube should be 1024x1024, as that is the closest power of 2 that matches the project's texture density. 
+
+<a name="7.3"></a>
+<a name="textures-max-size"></a>
+### 7.3 Textures Should Be No Bigger than 8192 ![#](https://img.shields.io/badge/lint-unsupported-red.svg)
+
+No texture should have a dimension that exceeds 8192 in size, unless you have a very explicit reason to do so. Often, using a texture this big is simply just a waste of resources.
+
+<a name="7.4"></a>
+<a name="textures-group"></a>
+### 7.4 Textures Should Be Grouped Correctly ![#](https://img.shields.io/badge/lint-unsupported-red.svg)
+
+Every texture has a Texture Group property used for LODing, and this should be set correctly based on its use. For example, all UI textures should belong in the UI texture group.
+
+**[⬆ Back to Top](#table-of-contents)**
+
 
 ## Contributors
 
